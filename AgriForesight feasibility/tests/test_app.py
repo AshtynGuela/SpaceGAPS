@@ -49,8 +49,8 @@ class PrototypeTests(unittest.TestCase):
     def test_simulation_does_not_mutate_weather(self):
         before = self.client.get('/api/state').get_json()['climate']
         response = self.client.post('/api/simulate',json={'source':'history','system':'paddy','rain_change':-50})
-        self.assertEqual(response.status_code,200)
-        self.assertNotEqual(response.get_json()['baseline']['rain_total'],response.get_json()['scenario']['rain_total'])
+        self.assertEqual(response.status_code,404)
+        self.assertEqual(response.status_code,404)
         self.assertEqual(before,self.client.get('/api/state').get_json()['climate'])
 
     def test_journal_retries_are_idempotent(self):

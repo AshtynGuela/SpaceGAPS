@@ -1,4 +1,6 @@
 # AgriForesight
+
+**Current focus: the farm assistant.** Tap **Ask for help** on any page to check weather, compare crop options, update crop/stage details and save notes. [Assistant setup and limits](docs/ASSISTANT.md). Simulations are retired from the app; older guides below may still describe the previous water-planning work.
 AI-GENERATED CONTENT INCOMING
 
 A small farm-planning app built around Bicol. Check, try  watering plan, compare crops for the next season, and keep field notes (no func).

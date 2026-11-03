@@ -1,3 +1,13 @@
+# Assistant update
+
+The assistant is now the home screen, with a replaceable SVG sprout mark. Simulations are removed from the browser and `/api/simulate` returns 404. Existing water calculation modules are retained as earlier work.
+
+Assistant checks cover confirmation before crop changes, cancellation, duplicate note retries, drainage follow-up, invalid chat IDs, wrong confirmation IDs and removal of the simulation endpoint. Browser checks showed the assistant home, the drainage question and source-linked crop advice. The optional external AI classifier is implemented but has not been live-tested with a configured key/model. Voice is not implemented.
+
+See [assistant setup](ASSISTANT.md) for the working guided phrases and optional configuration.
+
+---
+
 # Current verification status
 
 The latest recorded automated run passed 53 tests. Extra one-off checks covered drainage blocking, stale forecast exclusion, a draft harvest date and a 366-day historical window. Those one-off checks are not all stored as repeatable tests yet.

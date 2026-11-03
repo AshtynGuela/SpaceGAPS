@@ -47,10 +47,7 @@ class PeriodWorkflowTests(unittest.TestCase):
         state=self.client.get('/api/state').get_json()
         self.assertEqual(state['analysis_period']['end'],'2026-10-31')
         self.assertTrue(all(a.get('context') for a in state['recommendation']['actions']))
-        sim=self.client.post('/api/simulate',json={'source':'history','system':'paddy'}).get_json()
-        self.assertEqual(len(sim['scenario']['days']),31)
-        self.assertEqual(sim['weather_start'],'2026-10-01')
-        self.assertTrue(sim['actions'])
+        self.assertEqual(self.client.post('/api/simulate',json={}).status_code,404)
 
     def test_record_edit_changes_model_input_and_backup_restores_it(self):
         climate=self.seed();self.apply_october()

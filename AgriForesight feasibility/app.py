@@ -16,7 +16,6 @@ from climate import demo, fetch_power, fetch_archive
 from location import lookup, coordinates
 from forecast import fetch_forecast, fetch_archived_forecast
 from modelling import build_forecast, replay_period, clean_days, VERSION
-from simulation import simulate
 from evaluation import archive_scores
 from time_utils import ph_today
 from periods import validate_period, period_days
@@ -198,6 +197,12 @@ def create_app(database=None):
             raise ValueError('A JSON object is required.')
         return data
 
+    @app.get('/healthz')
+    def health():
+        with db() as conn:
+            conn.execute('SELECT 1').fetchone()
+        return jsonify(status='ok')
+
     @app.get('/')
     def index():
         return send_from_directory(app.static_folder, 'index.html')
@@ -224,7 +229,7 @@ def create_app(database=None):
             if result and matches:
                 provider=forecast if session['mode']=='forward' else get(f'comparison:{farm["latitude"]}:{farm["longitude"]}:{session["start"]}:{session["end"]}')
                 analysis={'internal':result,'provider':provider,'actions':suggested_actions(farm,{**result,'source':'Internal '+session['mode'],'retrieved_at':result.get('issued_at')},allow_past=session['mode']=='replay',label='Historical test' if session['mode']=='replay' else 'Internal forecast')}
-        return jsonify(farm=farm, climate=climate, weather_actions=suggested_actions(farm,forecast), analysis_period=period, analysis=analysis, journals=journals, forecast=forecast, internal=internal, saved_evaluation=scores(farm,climate), recommendation=summary)
+        return jsonify(demo_mode=os.environ.get('AGRIFORESIGHT_DEMO')=='1', farm=farm, climate=climate, weather_actions=suggested_actions(farm,forecast), analysis_period=period, analysis=analysis, journals=journals, forecast=forecast, internal=internal, saved_evaluation=scores(farm,climate), recommendation=summary)
 
     @app.errorhandler(FileNotFoundError)
     def missing_boundaries(error):
@@ -337,6 +342,60 @@ def create_app(database=None):
             return jsonify(error='The month outlook could not be loaded. Try again later.'),502
         put(key,result);return jsonify(result)
 
+    @app.post('/api/chat')
+    def chat():
+        from assistant_chat import understand
+        from crop_planning import suggest
+        from engine import CROP_STAGES
+        import uuid
+        data=body();message=data.get('message','');session=data.get('session','')
+        try:session=str(uuid.UUID(session))
+        except (ValueError,TypeError,AttributeError):raise ValueError('Start a new chat and try again.')
+        if not isinstance(message,str) or not 1<=len(message.strip())<=2000:raise ValueError('Write a short message, up to 2,000 characters.')
+        message=message.strip();farm=get('farm',DEFAULT_FARM);key='chat:'+session;pending=get(key)
+        mode='AI-assisted' if os.environ.get('AGRIFORESIGHT_DEMO')!='1' and os.environ.get('OPENAI_API_KEY') and os.environ.get('AGRIFORESIGHT_CHAT_MODEL') else 'Guided assistant'
+        def reply(text,choices=None,**extra):return jsonify(text=text,choices=choices or [],mode=mode,**extra)
+        if message=='Cancel':put(key,None);return reply('Okay, cancelled. What would you like to do?')
+        if message=='Save this':
+            if not pending or pending.get('kind') not in ('crop','stage','note'):return reply('There is no change waiting to be saved.')
+            if data.get('confirmation_id')!=pending['id']:return reply('Use Save this on the latest change, or tell me the change again.')
+            if pending['farm']!=farm:put(key,None);return reply('The farm changed while we were talking. Please tell me the change again.')
+            if pending['kind']=='note':
+                item={'id':pending['id'],'date':pending['date'],'crop':farm['crop'],'note':pending['value'],'technique':'Field note via assistant','outcome':'unobserved','yield_kg':None,'municipality':farm['municipality'],'created_at':datetime.now(timezone.utc).isoformat(),'schema_version':2,'farm_context':farm}
+                with db() as conn:conn.execute('INSERT OR IGNORE INTO journals VALUES (?,?)',(item['id'],json.dumps(item)))
+            else:
+                field='crop' if pending['kind']=='crop' else 'crop_stage'
+                updated=validate_profile({**farm,field:pending['value']});updated['location']=farm.get('location');put('farm',updated)
+            put(key,None);return reply('Saved. Your records are updated.',changed=True,updated_fields=({field:pending['value']} if pending['kind']!='note' else {}))
+        if pending and pending.get('kind')=='note_input':
+            intent={'intent':'note','value':message};put(key,None)
+        elif pending and pending.get('kind')=='drainage' and message in ('Drains well','Water stands','Not sure'):
+            drainage={'Drains well':'good','Water stands':'poor','Not sure':'unknown'}[message]
+            result=suggest(farm,{'drainage':drainage},forecast=saved_forecast(farm['latitude'],farm['longitude']));put(key,None)
+            options=result['options'];top=next((o for o in options if not o['blocked']),None)
+            text=(('One option to discuss is '+top['crop']+'. '+(' '.join(top['reasons'][:2]))+' '+(' '.join(top['cautions'][:2]))) if top else 'Check drainage with a technician before choosing a crop.')
+            return reply(text+' '+result['timing'],sources=result['sources'],open_page='planting')
+        else:intent=understand(message)
+        action=intent['intent'];value=intent['value']
+        if action=='weather':
+            forecast=saved_forecast(farm['latitude'],farm['longitude'])
+            if not forecast:return reply('No forecast saved yet. Tap Update weather to get one for your farm.',choices=['Update weather'])
+            age=(datetime.now(timezone.utc)-datetime.fromisoformat(forecast['retrieved_at'])).total_seconds()
+            if age>172800 or age<0:return reply('The saved forecast needs an update before planning. Tap Update weather.',choices=['Update weather'])
+            days=[d for d in forecast['days'] if d['date']>=ph_today().isoformat()][:3]
+            if not days:return reply('The saved forecast is out of date. Tap Update weather.',choices=['Update weather'])
+            return reply('Here is the saved weather for '+farm['municipality']+'. Saved '+forecast['retrieved_at'][:10]+'. Check the field too; rain can vary nearby.',days=days,choices=['Update weather'],open_page='forecasts')
+        if action=='farm':return reply(f"Your farm is {farm['name']} in {farm['municipality']}. {farm['area']} hectares, growing {farm['crop']}, stage: {farm['crop_stage']}. Water: {farm['water']}.",open_page='farm')
+        if action=='crops':put(key,{'kind':'drainage'});return reply('After rain, does water stand in your field?',choices=['Drains well','Water stands','Not sure','Cancel'])
+        if action=='note' and not value:put(key,{'kind':'note_input'});return reply('What would you like to write down? I will save the note under today’s date.',choices=['Cancel'])
+        if action in ('crop','stage','note'):
+            if action=='crop' and value not in CROPS or action=='stage' and value not in CROP_STAGES:return reply('I could not match that value. Try “my crop is rice” or “newly planted”.')
+            if not value or len(value)>2000:raise ValueError('Keep the note to 2,000 characters.')
+            confirmation_id=str(uuid.uuid4())
+            put(key,{'kind':action,'value':value,'farm':farm,'id':confirmation_id,'date':ph_today().isoformat()})
+            return reply(('Save this note for today: ' if action=='note' else 'Update your '+('crop' if action=='crop' else 'crop stage')+' to: ')+value+'?',choices=['Save this','Cancel'],confirmation_id=confirmation_id,target_field=('crop' if action=='crop' else 'crop_stage' if action=='stage' else None))
+        return reply('I can check weather, suggest crops, update your crop or stage, and save notes. Try “my crop is rice” or tap one below.',choices=['Check weather','Choose a crop','My farm','Save a note'])
+
     @app.post('/api/crop-suggestions')
     def crop_suggestions():
         from crop_planning import suggest
@@ -348,25 +407,6 @@ def create_app(database=None):
         from crop_planning import plan
         data=body();farm=get('farm',DEFAULT_FARM)
         return jsonify(plan(farm,data))
-
-    @app.post('/api/simulate')
-    def simulation_route():
-        data=body()
-        farm=get('farm',DEFAULT_FARM)
-        climate=dataset(data.get('dataset','current'),farm)
-        forecast=saved_forecast(farm['latitude'],farm['longitude'])
-        if data.get('source') == 'internal':
-            forecast=get(model_key(climate_for(farm)))
-            if not forecast or forecast.get('status')!='ready':
-                raise ValueError('Fit the internal forecast for saved farm weather first.')
-            forecast={**forecast,'source':'Internal forecast from '+forecast['source']}
-        period=active_period(farm)
-        if data.get('source')=='history' and period:
-            data={**data,'start':data.get('start') or period['start'],'end':data.get('end') or period['end']}
-        result=simulate(farm,climate,forecast,data)
-        result['actions']=simulation_actions(farm,result)
-        result['dataset_label']=climate.get('label',climate['source']) if data.get('source')=='history' else 'Saved farm '+data.get('source','forecast')
-        return jsonify(result)
 
     @app.post('/api/history/import')
     def import_history():

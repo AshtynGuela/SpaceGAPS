@@ -48,7 +48,7 @@ def suggested_actions(farm, forecast, *, allow_past=False,label=None):
             if farm['water']=='rainfed':
                 add('Check the soil before planning water','Check the soil and drains before planting or watering. If you rely on rain, see what water you can store for the days ahead.',f'{label or forecast.get("source","Selected weather")}: {total:.1f} mm across {len(rain)} available days; the farm is rainfed. A total alone does not establish crop water supply.',f'{usable[0]["date"]} to {usable[-1]["date"]}','balance')
             else:
-                add('Check your irrigation plan','See how wet the soil is, how much water you have and where it might be leaking. Try your watering plan in Simulations.',f'{label or forecast.get("source","Selected weather")}: {total:.1f} mm across {len(rain)} available days; the farm has irrigation.',f'{usable[0]["date"]} to {usable[-1]["date"]}','balance')
+                add('Check your irrigation plan','See how wet the soil is, how much water you have and where it might be leaking. Ask your technician about the next watering.',f'{label or forecast.get("source","Selected weather")}: {total:.1f} mm across {len(rain)} available days; the farm has irrigation.',f'{usable[0]["date"]} to {usable[-1]["date"]}','balance')
     if farm['crop']=='rice' and farm.get('crop_stage')=='flowering':
         add('Keep an eye on water while rice is flowering','Check the field and your water supply. Ask your technician about watering before letting flowering rice dry out.','The saved crop is rice and the farmer-selected stage is flowering.','During flowering','rice','Priority')
     elif farm['crop']=='rice' and farm['water']=='irrigated' and farm.get('crop_stage')=='vegetative':
