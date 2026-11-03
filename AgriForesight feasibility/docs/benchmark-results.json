@@ -1,0 +1,380 @@
+{
+  "legazpi": {
+    "source": "NASA POWER \u2014 gridded historical data",
+    "quality": {
+      "valid_days": 1035,
+      "calendar_days": 1035,
+      "missing_days": 0,
+      "invalid_rows": 0,
+      "duplicate_rows": 0,
+      "upstream_missing_days": 1,
+      "training_end": "2026-10-31",
+      "trailing_days_excluded": 0
+    },
+    "evaluation": {
+      "temp": {
+        "selected": "baseline",
+        "selection_mae": {
+          "baseline": {
+            "n": 56,
+            "mae": 0.471,
+            "rmse": 0.59,
+            "bias": 0.147,
+            "mape": null,
+            "mape_excluded": 56
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 0.485,
+            "rmse": 0.561,
+            "bias": -0.013,
+            "mape": null,
+            "mape_excluded": 56
+          }
+        },
+        "holdout": {
+          "baseline": {
+            "n": 56,
+            "mae": 0.543,
+            "rmse": 0.69,
+            "bias": 0.161,
+            "mape": null,
+            "mape_excluded": 56
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 0.378,
+            "rmse": 0.524,
+            "bias": -0.047,
+            "mape": null,
+            "mape_excluded": 56
+          }
+        }
+      },
+      "rain": {
+        "selected": "baseline",
+        "selection_mae": {
+          "baseline": {
+            "n": 56,
+            "mae": 4.486,
+            "rmse": 5.798,
+            "bias": 0.703,
+            "mape": 125.06,
+            "mape_excluded": 6
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 6.084,
+            "rmse": 6.959,
+            "bias": 3.393,
+            "mape": 210.58,
+            "mape_excluded": 6
+          }
+        },
+        "holdout": {
+          "baseline": {
+            "n": 56,
+            "mae": 3.471,
+            "rmse": 5.059,
+            "bias": -0.302,
+            "mape": 68.31,
+            "mape_excluded": 4
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 7.649,
+            "rmse": 8.264,
+            "bias": 6.386,
+            "mape": 201.94,
+            "mape_excluded": 4
+          }
+        }
+      }
+    },
+    "days": [
+      {
+        "date": "2026-11-01",
+        "temp": 27.23,
+        "temp_range": [
+          26.15,
+          28.31
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          0,
+          9.64
+        ]
+      },
+      {
+        "date": "2026-11-02",
+        "temp": 27.23,
+        "temp_range": [
+          26.68,
+          27.77
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          0,
+          8.47
+        ]
+      },
+      {
+        "date": "2026-11-03",
+        "temp": 27.23,
+        "temp_range": [
+          26.42,
+          28.04
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          0.02,
+          7.74
+        ]
+      },
+      {
+        "date": "2026-11-04",
+        "temp": 27.23,
+        "temp_range": [
+          26.49,
+          27.97
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          0,
+          9.78
+        ]
+      },
+      {
+        "date": "2026-11-05",
+        "temp": 27.23,
+        "temp_range": [
+          25.97,
+          28.49
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          0,
+          17.8
+        ]
+      },
+      {
+        "date": "2026-11-06",
+        "temp": 27.23,
+        "temp_range": [
+          25.73,
+          28.73
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          0,
+          14.48
+        ]
+      },
+      {
+        "date": "2026-11-07",
+        "temp": 27.23,
+        "temp_range": [
+          25.81,
+          28.65
+        ],
+        "rain": 3.88,
+        "rain_range": [
+          1.42,
+          6.34
+        ]
+      }
+    ],
+    "method": "Direct 1\u20137 day ridge regression vs trailing 14-day mean. Selection uses earlier rolling validation; later weekly origins are held out. Ridge must improve validation MAE by at least 2%. Each origin fits only past targets.",
+    "range_note": "Ranges show the 90th percentile of absolute same-lead holdout errors (at least 5 errors). They are descriptive error bands, not calibrated probabilities.",
+    "reference_note": "NASA POWER is a gridded historical reference, not a farm weather station. Internal forecasts start after the latest complete 14-day input window; old inputs produce old forecast dates."
+  },
+  "naga": {
+    "source": "NASA POWER \u2014 gridded historical data",
+    "quality": {
+      "valid_days": 1035,
+      "calendar_days": 1035,
+      "missing_days": 0,
+      "invalid_rows": 0,
+      "duplicate_rows": 0,
+      "upstream_missing_days": 1,
+      "training_end": "2026-10-31",
+      "trailing_days_excluded": 0
+    },
+    "evaluation": {
+      "temp": {
+        "selected": "ridge",
+        "selection_mae": {
+          "baseline": {
+            "n": 56,
+            "mae": 0.435,
+            "rmse": 0.555,
+            "bias": 0.224,
+            "mape": null,
+            "mape_excluded": 56
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 0.414,
+            "rmse": 0.509,
+            "bias": -0.011,
+            "mape": null,
+            "mape_excluded": 56
+          }
+        },
+        "holdout": {
+          "baseline": {
+            "n": 56,
+            "mae": 0.613,
+            "rmse": 0.741,
+            "bias": 0.2,
+            "mape": null,
+            "mape_excluded": 56
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 0.445,
+            "rmse": 0.57,
+            "bias": -0.024,
+            "mape": null,
+            "mape_excluded": 56
+          }
+        }
+      },
+      "rain": {
+        "selected": "baseline",
+        "selection_mae": {
+          "baseline": {
+            "n": 56,
+            "mae": 5.309,
+            "rmse": 7.432,
+            "bias": 0.675,
+            "mape": 141.34,
+            "mape_excluded": 18
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 7.519,
+            "rmse": 8.68,
+            "bias": 3.883,
+            "mape": 229.52,
+            "mape_excluded": 18
+          }
+        },
+        "holdout": {
+          "baseline": {
+            "n": 56,
+            "mae": 4.478,
+            "rmse": 5.971,
+            "bias": -0.383,
+            "mape": 106.0,
+            "mape_excluded": 4
+          },
+          "ridge": {
+            "n": 56,
+            "mae": 9.124,
+            "rmse": 9.769,
+            "bias": 7.952,
+            "mape": 286.4,
+            "mape_excluded": 4
+          }
+        }
+      }
+    },
+    "days": [
+      {
+        "date": "2026-11-01",
+        "temp": 27.09,
+        "temp_range": [
+          26.56,
+          27.63
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          13.6
+        ]
+      },
+      {
+        "date": "2026-11-02",
+        "temp": 27.1,
+        "temp_range": [
+          26.57,
+          27.63
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          11.35
+        ]
+      },
+      {
+        "date": "2026-11-03",
+        "temp": 27.1,
+        "temp_range": [
+          26.48,
+          27.71
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          10.57
+        ]
+      },
+      {
+        "date": "2026-11-04",
+        "temp": 27.1,
+        "temp_range": [
+          26.3,
+          27.9
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          15.44
+        ]
+      },
+      {
+        "date": "2026-11-05",
+        "temp": 27.1,
+        "temp_range": [
+          25.96,
+          28.24
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          11.94
+        ]
+      },
+      {
+        "date": "2026-11-06",
+        "temp": 27.1,
+        "temp_range": [
+          25.9,
+          28.3
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          8.87
+        ]
+      },
+      {
+        "date": "2026-11-07",
+        "temp": 27.1,
+        "temp_range": [
+          26.29,
+          27.91
+        ],
+        "rain": 3.08,
+        "rain_range": [
+          0,
+          6.63
+        ]
+      }
+    ],
+    "method": "Direct 1\u20137 day ridge regression vs trailing 14-day mean. Selection uses earlier rolling validation; later weekly origins are held out. Ridge must improve validation MAE by at least 2%. Each origin fits only past targets.",
+    "range_note": "Ranges show the 90th percentile of absolute same-lead holdout errors (at least 5 errors). They are descriptive error bands, not calibrated probabilities.",
+    "reference_note": "NASA POWER is a gridded historical reference, not a farm weather station. Internal forecasts start after the latest complete 14-day input window; old inputs produce old forecast dates."
+  }
+}

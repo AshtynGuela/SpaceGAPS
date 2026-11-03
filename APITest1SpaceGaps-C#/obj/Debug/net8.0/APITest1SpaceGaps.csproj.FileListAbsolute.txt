@@ -1,0 +1,14 @@
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\bin\Debug\net8.0\APITest1SpaceGaps.exe
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\bin\Debug\net8.0\APITest1SpaceGaps.deps.json
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\bin\Debug\net8.0\APITest1SpaceGaps.runtimeconfig.json
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\bin\Debug\net8.0\APITest1SpaceGaps.dll
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\bin\Debug\net8.0\APITest1SpaceGaps.pdb
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.AssemblyInfoInputs.cache
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.AssemblyInfo.cs
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.csproj.CoreCompileInputs.cache
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.dll
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\refint\APITest1SpaceGaps.dll
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.pdb
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\APITest1SpaceGaps.genruntimeconfig.cache
+C:\Users\ADMIN\Desktop\PersonalProjects\SpaceGAPS\APITest1SpaceGaps\obj\Debug\net8.0\ref\APITest1SpaceGaps.dll
